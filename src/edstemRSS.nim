@@ -63,6 +63,10 @@ proc createFeed(courseID: int): string =
         author.add newTextTag("name", post.author)
         item.add author
 
+        let category = newElement("category")
+        category.attrs = {"term": post.category}.toXmlAttributes()
+        item.add category
+
         let url = fmt"https://edstem.org/courses/{courseID}/discussion/{post.postID}"
         item.add newLink(url)
         item.add newTextTag("id", url)
