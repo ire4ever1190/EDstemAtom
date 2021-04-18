@@ -1,11 +1,12 @@
-import httpclient
-import asyncdispatch
-import strformat
-import json
+import std/httpclient
+import std/asyncdispatch
+import std/strformat
+import std/json
+import std/strutils
 import common
 
 const 
-    token = readFile("token")
+    token = readFile("token").strip()
 
 
 
