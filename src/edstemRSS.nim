@@ -24,7 +24,7 @@ proc getNewPosts(ids: seq[int]) {.async.}=
 proc getPostsTask(ids: seq[int]) {.async.} =
     while true:
         await getNewPosts(ids)
-        await sleepAsync((60 * 60 * 60) * 3 * 1000) # 3 hours in milliseconds
+        await sleepAsync((60 * 60) * 1 * 1000) # 1 hours in milliseconds
 
 asyncCheck getPostsTask(courseIDs)
 
