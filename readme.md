@@ -6,7 +6,6 @@ all my notifications in one place
 
 to run it you must
  - create a file called "token" containing your "x-token" header
- - Go into edstemRSS.nim and add your courses
 
 then run `nimble run`
 

@@ -26,6 +26,10 @@ type
         updated_at*: string
         user*: ForumUser
 
+    ForumCourse* = object
+        id*: int
+        status*: string
+
 ## 2021-04-18T12:17:40.066362+10:00
 proc getUpdateDate*(post: Post): DateTime =
     let parts = post.updatedAt.split('.')
