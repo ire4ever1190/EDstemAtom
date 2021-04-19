@@ -29,16 +29,19 @@ proc getPostsTask(ids: seq[int]) {.async.} =
 asyncCheck getPostsTask(courseIDs)
 
 proc newTextTag(tagname: string, content: string, attributes: seq[(string, string)] = @[]): XmlNode =
+    ## Creates a new xml tag with text inside it
     result = newElement(tagname)
     if attributes.len() > 0:
         result.attrs = attributes.toXmlAttributes()
     result.add newText(content)
 
 proc newLink(url: string): XmlNode =
+    ## Creates a new xml link element
     result = newElement("link")
     result.attrs = {"href": url}.toXmlAttributes()
 
 proc createFeed(courseID: int): string =
+    ## Creates the Atom feed from all posts in a course
     let posts = db.getPosts(courseID)
     var feed = newElement("feed")
     feed.attrs = {"xmlns": "http://www.w3.org/2005/Atom"}.toXmlAttributes()
