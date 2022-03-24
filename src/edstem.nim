@@ -6,13 +6,15 @@ import std/strutils
 import common
 {.experimental: "codeReordering".}
 
-const baseURL = "https://edstem.org/api"
-const userDetails = readFile("details").strip().split(" ")
-const
+const 
+    baseURL = "https://edstem.org/api"
+    userDetails = readFile("details").strip().split(" ")
     username = userDetails[0]
     password = userDetails[1]
-    
+
+     
 var token = ""
+
 token = waitFor getToken(username, password)
 
 proc newClient(): AsyncHttpClient =
@@ -54,7 +56,12 @@ proc api(path: string, httpMethod = HttpGet, body = ""): Future[string] {.async.
 proc getPosts*(courseID: int, limit: int = 30): Future[seq[ForumPost]] {.async.} =
     ## Fetches the posts from a course using EdStems api (thank you for not having a terrible api)
     let body = await api(fmt"/courses/{courseID}/threads?limit={limit}&sort=new")
-    result = body.parseJson()["threads"].to(seq[ForumPost])
+    let threads = body.parseJson()["threads"]
+    result = newSeq[ForumPost](threads.len)
+    for thread in threads:
+        result &= thread.to(ForumPost)
+        if result[^1].updatedAt == "":
+            result[^1].updatedAt = thread["created_at"].getStr()
 
 proc getCourses*(): Future[seq[int]] {.async.} =
     ## Gets all active courses that the user belongs to

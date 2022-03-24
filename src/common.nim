@@ -1,6 +1,8 @@
 import norm/[model, pragmas]
 import std/times
 import std/strutils
+import std/options
+
 
 type
     Post* = ref object of Model
@@ -24,11 +26,13 @@ type
         document*: string
         category*: string
         updated_at*: string
-        user*: ForumUser
+        user*: Option[ForumUser]
 
     ForumCourse* = object
         id*: int
         status*: string
+
+const anonUser* = ForumUser(name: "Anonymous")
 
 ## 2021-04-18T12:17:40.066362+10:00
 proc getUpdateDate*(post: Post): DateTime =
@@ -58,6 +62,6 @@ converter toDBPost*(post: ForumPost): Post =
         title: post.title,
         content: post.content.convertHTML(),
         category: post.category,
-        author: post.user.name,
+        author: post.user.get(anonUser).name,
         updatedAt: post.updatedAt
     )

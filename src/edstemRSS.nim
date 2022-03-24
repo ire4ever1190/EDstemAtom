@@ -6,10 +6,11 @@ import std/strutils
 import std/strformat
 import std/xmltree
 import std/times
+import taskman
 from ndb/sqlite import DbError
 import asyncdispatch
 
-let courseIDs = waitFor getCourses() # Load course IDs from the user
+var courseIDs = waitFor getCourses() # Load course IDs from the user
 
 proc getNewPosts(ids: seq[int]) {.async.}=
     for id in ids:
@@ -21,12 +22,13 @@ proc getNewPosts(ids: seq[int]) {.async.}=
                 # Update incase the teacher changed something
                 db.updatePost(post)
                 
-proc getPostsTask(ids: seq[int]) {.async.} =
-    while true:
-        await getNewPosts(ids)
-        await sleepAsync((60 * 60) * 1 * 1000) # 1 hours in milliseconds
+let tasks = newScheduler()
 
-asyncCheck getPostsTask(courseIDs)
+tasks.every(1.hours) do () {.async.}:
+    courseIDs = await getCourses()
+    await getNewPosts(courseIDs)
+
+asyncCheck tasks.start()
 
 proc newTextTag(tagname: string, content: string, attributes: seq[(string, string)] = @[]): XmlNode =
     ## Creates a new xml tag with text inside it
