@@ -31,6 +31,7 @@ proc apiRequest(path: string, httpMethod = HttpGet, body = ""): Future[AsyncResp
         url = baseURL & path
         client = newClient()
     let response = await client.request(url, httpMethod, body = body)
+    client.close()
     result = response        
 
 proc getToken*(username, password: string): Future[string] {.async.} =
