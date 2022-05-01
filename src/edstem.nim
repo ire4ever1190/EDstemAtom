@@ -20,7 +20,7 @@ proc newClient(): AsyncHttpClient =
     newAsyncHttpClient(headers = newHttpHeaders({
         "x-token": token,
         "Content-Type": "application/json"
-    }), userAgent = "Atom Feed", proxy = newProxy("http://127.0.0.1:8080"))
+    }), userAgent = "Atom Feed")
 
 token = waitFor getToken(username, password)
 
