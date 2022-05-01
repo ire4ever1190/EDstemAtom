@@ -15,38 +15,41 @@ const
      
 var token = ""
 
-token = waitFor getToken(username, password)
-
 proc newClient(): AsyncHttpClient =
     ## Creates a new AsyncHttpClient with default settings
     newAsyncHttpClient(headers = newHttpHeaders({
         "x-token": token,
         "Content-Type": "application/json"
-    }), userAgent = "Atom Feed")
+    }), userAgent = "Atom Feed", proxy = newProxy("http://127.0.0.1:8080"))
 
+token = waitFor getToken(username, password)
 
-proc apiRequest(path: string, httpMethod = HttpGet, body = ""): Future[AsyncResponse] {.async.} =
+proc apiRequest(client: AsyncHttpClient, path: string, httpMethod = HttpGet, body = ""): Future[AsyncResponse] {.async.} =
     ## Makes a request to edstem
+    echo path
     let
         url = baseURL & path
-        client = newClient()
     let response = await client.request(url, httpMethod, body = body)
-    client.close()
+    # client.close()
     result = response        
 
 proc getToken*(username, password: string): Future[string] {.async.} =
     ## Gets a token from edstem using the specified username and password
-    let response = await apiRequest("/token", httpMethod = HttpPost, body = $ %* {
+    let client = newClient()
+    defer: client.close()
+    let response = await client.apiRequest("/token", httpMethod = HttpPost, body = $ %* {
         "login": username,
         "password": password
     })
     if not (response.code == Http200):
         raise newException(ValueError, "Your username or password is incorrect")
-    result = (await response.body).parseJson()["token"].getStr()
+    result = response.body.await().parseJson()["token"].getStr()
 
 proc api(path: string, httpMethod = HttpGet, body = ""): Future[string] {.async.} =
     ## Makes an api request to edstem and returns the string return body
-    let response = await apiRequest(path, httpMethod, body)
+    let client = newClient()
+    defer: client.close()
+    let response = await client.apiRequest(path, httpMethod, body)
     if response.code == Http401: # Invalid token
         token = await getToken(username, password)
         result = await api(path, httpMethod, body)
@@ -72,4 +75,11 @@ proc getCourses*(): Future[seq[int]] {.async.} =
         let course = courseJson["course"].to(ForumCourse) # Get the course, not the role
         if course.status == "active":
             result &= course.id
+
+
+
+
+
+
+
 
