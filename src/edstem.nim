@@ -26,11 +26,9 @@ token = waitFor getToken(username, password)
 
 proc apiRequest(client: AsyncHttpClient, path: string, httpMethod = HttpGet, body = ""): Future[AsyncResponse] {.async.} =
     ## Makes a request to edstem
-    echo path
     let
-        url = baseURL & path
-    let response = await client.request(url, httpMethod, body = body)
-    # client.close()
+      url = baseURL & path
+      response = await client.request(url, httpMethod, body = body)
     result = response        
 
 proc getToken*(username, password: string): Future[string] {.async.} =
