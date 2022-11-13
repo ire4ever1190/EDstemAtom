@@ -10,10 +10,10 @@ bin           = @["edstemRSS"]
 
 # Dependencies
 
-requires "nim >= 1.5.1"
-requires "mike" # I'll publish the actual lib when I ain't lazy
-requires "norm >= 2.3.0"
-requires "https://github.com/ire4ever1190/taskman"
+requires "nim >= 1.6.0"
+requires "mike#a87823f"
+requires "norm == 2.6.0"
+requires "taskman == 0.5.1"
 
 task release, "build release binary":
     exec "nim c --gc:orc --deepcopy:on --opt:size -d:release -d:danger --out:runme src/edstemRSS.nim"

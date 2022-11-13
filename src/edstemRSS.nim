@@ -22,7 +22,7 @@ proc getNewPosts(ids: seq[int]) {.async.}=
                 # Update incase the teacher changed something
                 db.updatePost(post)
                 
-let tasks = newScheduler()
+let tasks = newAsyncScheduler()
 
 tasks.every(1.hours) do () {.async.}:
     courseIDs = await getCourses()
@@ -86,9 +86,8 @@ proc createFeed(courseID: int): string =
     feed.insert(newTextTag("updated", latestTime.format(dateFormat)), feed.len() - len(posts) - 2) # Insert updated before all the posts
     result = $feed
     
-"/feed/:course" -> get:
-    let courseID = ctx.pathParams["course"].parseInt()
-    return createFeed(courseID)
+"/feed/:course" -> get(course: int):
+    return createFeed(course)
 
 run(8094)
 
