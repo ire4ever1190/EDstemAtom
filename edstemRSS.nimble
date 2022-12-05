@@ -11,7 +11,7 @@ bin           = @["edstemRSS"]
 # Dependencies
 
 requires "nim >= 1.6.0"
-requires "mike#a87823f"
+requires "mike#9823568"
 requires "norm == 2.6.0"
 requires "taskman == 0.5.1"
 
